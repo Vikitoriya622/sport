@@ -104,7 +104,7 @@
             continuousWorld: false,
             worldCopyJump: false, 
             zoomControl:false, maxZoom:28, minZoom:1
-        }).fitBounds([[54.981720924895235,82.89445992429584],[55.00044204194168,82.93271978366434]]);
+        }).fitBounds([[54.862284076430434,82.39827589521141],[55.19892976159692,83.25805864344272]]);
         var hash = new L.Hash(map);
         map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
         var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
@@ -802,8 +802,7 @@
         });
         bounds_group.addLayer(layer__11);
         map.addLayer(layer__11);
-        
-// ОБНОВЛЕННОЕ СОЗДАНИЕ СЛОЯ 12 (СТАНЦИИ МЕТРО) С РАСТРОВЫМ ЗНАКОМ МЕТРО
+        // ОБНОВЛЕННОЕ СОЗДАНИЕ СЛОЯ 12 (СТАНЦИИ МЕТРО) С РАСТРОВЫМ ЗНАКОМ МЕТРО
 
 // СОЗДАЕМ ПАНЕЛЬ ДЛЯ МЕТРО
 map.createPane('pane__12');
@@ -3899,7 +3898,7 @@ var layer__37 = new L.geoJson(json__37, {
     pointToLayer: function (feature, latlng) {
         var icon = L.icon({
             iconUrl: 'images/фехтование.png',
-            iconSize: [20, 30],
+            iconSize: [40, 45],
             iconAnchor: [15, 30],
             popupAnchor: [0, -30]
         });
@@ -5943,33 +5942,6 @@ bounds_group.addLayer(layer__53);
 map.addLayer(layer__53);
 
         function pop__54(feature, layer) {
-            var popupContent = '<table>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['id'] !== null ? autolinker.link(String(feature.properties['id']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['name'] !== null ? autolinker.link(String(feature.properties['name']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['adress'] !== null ? autolinker.link(String(feature.properties['adress']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['district'] !== null ? autolinker.link(String(feature.properties['district']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['image'] !== null ? autolinker.link(String(feature.properties['image']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['metro'] !== null ? autolinker.link(String(feature.properties['metro']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                </table>';
-            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
-			layer.on('popupopen', function(e) {
-				addClassToPopupIfMedia(content, e.popup);
-			});
-			layer.bindPopup(content, { maxHeight: 400 });
-        }
-        function pop__54(feature, layer) {
     var name = feature.properties['name'] !== null ? String(feature.properties['name']).replace(/'/g, '\'') : '';
     var address = feature.properties['adress'] !== null ? String(feature.properties['adress']).replace(/'/g, '\'') : '';
     var district = feature.properties['district'] !== null ? String(feature.properties['district']).replace(/'/g, '\'') : '';
@@ -6254,7 +6226,7 @@ map.addLayer(layer__53);
                          src="${images[0]}" 
                          alt="Фотография объекта" 
                          style="max-width: 100%; max-height: 150px; border-radius: 4px; cursor: pointer;"
-                         onclick="carouselOpenImage('${images[0]}')">
+                        onclick="window.openImageModal('${images[0]}')"
                 </div>
                 
                 ${images.length > 1 ? `
@@ -6279,38 +6251,29 @@ map.addLayer(layer__53);
     }
     
     // Глобальные функции для управления каруселью
-    if (!window.carouselOpenImage) {
-        window.carouselOpenImage = function(src) {
-            var modal = document.createElement('div');
-            modal.style.position = 'fixed';
-            modal.style.zIndex = '9999';
-            modal.style.left = '0';
-            modal.style.top = '0';
-            modal.style.width = '100%';
-            modal.style.height = '100%';
-            modal.style.backgroundColor = 'rgba(0,0,0,0.95)';
-            modal.style.display = 'flex';
-            modal.style.justifyContent = 'center';
-            modal.style.alignItems = 'center';
-            modal.style.cursor = 'pointer';
-            
-            var img = document.createElement('img');
-            img.src = src;
-            img.style.maxWidth = '90%';
-            img.style.maxHeight = '90%';
-            img.style.borderRadius = '4px';
-            img.style.boxShadow = '0 4px 20px rgba(0,0,0,0.5)';
-            img.style.cursor = 'default';
-            
-            modal.appendChild(img);
-            
-            modal.onclick = function() {
-                document.body.removeChild(modal);
-            };
-            
-            document.body.appendChild(modal);
-        };
+    
+      // Единая функция для открытия изображений
+window.openImageModal = function(src) {
+    // Удаляем предыдущее модальное окно, если есть
+    var existingModal = document.querySelector('.image-modal');
+    if (existingModal) {
+        document.body.removeChild(existingModal);
     }
+    
+    var modal = document.createElement('div');
+    modal.className = 'image-modal';
+    
+    var img = document.createElement('img');
+    img.src = src;
+    
+    modal.appendChild(img);
+    
+    modal.onclick = function() {
+        document.body.removeChild(modal);
+    };
+    
+    document.body.appendChild(modal);
+};
     
     if (!window.carouselPrevImage) {
         window.carouselPrevImage = function(carouselId) {
@@ -6325,7 +6288,7 @@ map.addLayer(layer__53);
             
             if (imgElement) {
                 imgElement.src = carousel.images[newIndex];
-                imgElement.onclick = function() { carouselOpenImage(carousel.images[newIndex]); };
+                imgElement.onclick = function() { window.openImageModal(carousel.images[newIndex]); };
             }
             
             if (counterElement) {
@@ -6370,15 +6333,17 @@ map.addLayer(layer__53);
                     (name !== '' ? autolinker.link(name.toLocaleString()) : '') + 
                     '</h3>';
     
-    // Карусель изображений
-    if (imagesArray.length > 0) {
-        popupContent += createImageCarousel(imagesArray);
-    } else if (image && image !== 'null' && image !== '') {
-        // Если нет массива изображений, но есть одно изображение в свойствах
-        popupContent += '<div style="text-align: center; margin-bottom: 10px;">' +
-                       '<img src="' + image + '" style="max-width: 100%; max-height: 120px; border-radius: 4px; cursor: pointer;" onclick="carouselOpenImage(\'' + image + '\')">' +
-                       '</div>';
-    }
+    // Карусель изображений с проверкой существования массива
+if (imagesArray && Array.isArray(imagesArray) && imagesArray.length > 0) {
+    popupContent += createImageCarousel(imagesArray);
+} else if (image && image !== 'null' && image !== 'undefined' && image !== '') {
+    // Если нет массива изображений, но есть одно изображение в свойствах
+    popupContent += '<div style="text-align: center; margin-bottom: 10px;">' +
+                   '<img src="' + image + '" style="max-width: 100%; max-height: 120px; border-radius: 4px; cursor: pointer;" ' +
+                   'onclick="window.openImageModal(\'' + image + '\')" ' +
+                   'onerror="this.style.display=\'none\'">' +
+                   '</div>';
+}
     
     // Основная информация
     popupContent += '<div style="margin-bottom: 10px;">';
@@ -6446,7 +6411,7 @@ function style__54_0(feature) {
         iconFile = 'images/Александрит.png';
     }
     
-    var iconSize = [80, 80];
+    var iconSize = [120, 120];
     
     return {
         icon: L.icon({
@@ -6480,7 +6445,7 @@ map.addLayer(layer__54);
       
         var overlaysTree = [
             {label: 'Крупные спортивные объекты<br /><table><tr><td style="text-align: center;"><img src="legend/_54_ДворейспортаНГТУ0.png" /></td><td>Дворей спорта НГТУ</td></tr><tr><td style="text-align: center;"><img src="legend/_54_ЛДССибирь1.png" /></td><td>ЛДС Сибирь</td></tr><tr><td style="text-align: center;"><img src="legend/_54_Локомотиварена2.png" /></td><td>Локомотив арена</td></tr><tr><td style="text-align: center;"><img src="legend/_54_СибирскийрегиональныйцентрфехтованияСтаниславаПозднякова3.png" /></td><td>Сибирский региональный центр фехтования Станислава Позднякова</td></tr><tr><td style="text-align: center;"><img src="legend/_54_СибирьАрена4.png" /></td><td>Сибирь-Арена</td></tr><tr><td style="text-align: center;"><img src="legend/_54_СКАлександрит5.png" /></td><td>СК Александрит</td></tr><tr><td style="text-align: center;"><img src="legend/_54_ФутбольныйманежЗаря6.png" /></td><td>Футбольный манеж "Заря"</td></tr><tr><td style="text-align: center;"><img src="legend/_54_ЦентрподготовкипоспортивнойгимнастикеЕвгенияПодгорного7.png" /></td><td>Центр подготовки по спортивной гимнастике Евгения Подгорного</td></tr></table>', layer: layer__54},
-        {label: '<b>Активные и экстримальные виды спорта</b>', collapsed: true, selectAllCheckbox: true, children: [
+        {label: '<b>Активные и экстремальные виды спорта</b>', collapsed: true, selectAllCheckbox: true, children: [
             {label: '<img src="legend/_53.png" /> батутный спорт', layer: layer__53},
             {label: '<img src="legend/_52.png" /> велоспорт', layer: layer__52},
             {label: '<img src="legend/_51.png" /> картинг', layer: layer__51},
@@ -6518,7 +6483,7 @@ map.addLayer(layer__54);
             {label: '<img src="legend/_24.png" /> теннис', layer: layer__24},
             {label: '<img src="legend/_23.png" /> хоккей', layer: layer__23},
             {label: '<img src="legend/_22.png" /> футбол', layer: layer__22},]},
-        {label: '<b>Интелектуальные и технические виды спорта</b>', collapsed: true, selectAllCheckbox: true, children: [
+        {label: '<b>Интеллектуальные и технические виды спорта</b>', collapsed: true, selectAllCheckbox: true, children: [
             {label: '<img src="legend/_21.png" /> бильярд', layer: layer__21},
             {label: '<img src="legend/_20.png" /> стрельба из лука', layer: layer__20},
             {label: '<img src="legend/_19.png" /> шахматы', layer: layer__19},]},
@@ -6604,30 +6569,376 @@ map.addLayer(layer__54);
             }  
         });       
         setBounds();
-        var i = 0;
-        layer__4.eachLayer(function(layer) {
-            var context = {
-                feature: layer.feature,
-                variables: {}
-            };
-            layer.bindTooltip((layer.feature.properties['name'] !== null?String('<div style="color: #2687f7; font-size: 3pt; font-style: italic; font-family: \'Bm431\', sans-serif;">' + layer.feature.properties['name']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css__4'});
-            labels.push(layer);
-            totalMarkers += 1;
-              layer.added = true;
-              addLabel(layer, i);
-              i++;
-        });
-        resetLabels([layer__4,layer__5,layer__54]);
-        map.on("zoomend", function(){
-            resetLabels([layer__4,layer__5,layer__54]);
-        });
-        map.on("layeradd", function(){
-            resetLabels([layer__4,layer__5,layer__54]);
-        });
-        map.on("layerremove", function(){
-            resetLabels([layer__4,layer__5,layer__54]);
-        });
-        </script>
-		</script>   
+
+        </script>        
+
+                <!-- Код для увеличения значков при приближении (УМЕРЕННАЯ ВЕРСИЯ) -->
+                <script>
+                    // Функция для динамического изменения размера иконок при зуме
+                    function setupZoomResponsiveIcons() {
+                        // Список слоев с иконками, которые нужно масштабировать
+                        const iconLayers = [
+                            { layer: layer__19, baseSize: [20, 30] }, // шахматы
+                            { layer: layer__20, baseSize: [20, 30] }, // стрельба из лука
+                            { layer: layer__21, baseSize: [20, 30] }, // бильярд
+                            { layer: layer__22, baseSize: [20, 30] }, // футбол
+                            { layer: layer__23, baseSize: [20, 30] }, // хоккей
+                            { layer: layer__24, baseSize: [20, 30] }, // теннис
+                            { layer: layer__25, baseSize: [20, 30] }, // бадминтон
+                            { layer: layer__26, baseSize: [20, 30] }, // баскетбол
+                            { layer: layer__27, baseSize: [20, 30] }, // волейбол
+                            { layer: layer__28, baseSize: [20, 30] }, // сноуборд
+                            { layer: layer__29, baseSize: [20, 30] }, // лыжный спорт
+                            { layer: layer__30, baseSize: [20, 30] }, // фигурное катание
+                            { layer: layer__31, baseSize: [20, 30] }, // спортивные танцы
+                            { layer: layer__32, baseSize: [20, 30] }, // гимнастика
+                            { layer: layer__33, baseSize: [20, 30] }, // аэробика
+                            { layer: layer__34, baseSize: [20, 30] }, // акробатика
+                            { layer: layer__35, baseSize: [20, 30] }, // парусный спорт
+                            { layer: layer__36, baseSize: [20, 30] }, // бассейны
+                            { layer: layer__37, baseSize: [20, 30] }, // фехтование
+                            { layer: layer__38, baseSize: [20, 30] }, // самбо
+                            { layer: layer__39, baseSize: [20, 30] }, // дзюдо
+                            { layer: layer__40, baseSize: [20, 30] }, // айкидо
+                            { layer: layer__41, baseSize: [20, 30] }, // рукопашный бой
+                            { layer: layer__42, baseSize: [20, 30] }, // тхэквондо
+                            { layer: layer__43, baseSize: [20, 30] }, // джиу-джитсу
+                            { layer: layer__44, baseSize: [20, 30] }, // ушу
+                            { layer: layer__45, baseSize: [20, 30] }, // каратэ
+                            { layer: layer__46, baseSize: [20, 30] }, // борьба
+                            { layer: layer__47, baseSize: [20, 30] }, // бокс
+                            { layer: layer__48, baseSize: [20, 30] }, // скалолазание
+                            { layer: layer__49, baseSize: [20, 30] }, // рафтинг
+                            { layer: layer__50, baseSize: [20, 30] }, // конный спорт
+                            { layer: layer__51, baseSize: [20, 30] }, // картинг
+                            { layer: layer__52, baseSize: [20, 30] }, // велоспорт
+                            { layer: layer__53, baseSize: [20, 30] }  // батутный спорт
+                        ];
+            
+                        // Функция для расчета размера иконки в зависимости от зума (УМЕРЕННЫЕ ЗНАЧЕНИЯ)
+                        function getIconSize(baseSize, zoom) {
+                            let scaleFactor = 1;
+                            
+                            if (zoom >= 18) {
+                                scaleFactor = 4.0; // Между 3.5 и 5.0
+                            } else if (zoom >= 17) {
+                                scaleFactor = 3.5; // Между 3.0 и 4.5
+                            } else if (zoom >= 16) {
+                                scaleFactor = 3.0; // Между 2.5 и 4.0
+                            } else if (zoom >= 15) {
+                                scaleFactor = 2.6; // Между 2.0 и 3.5
+                            } else if (zoom >= 14) {
+                                scaleFactor = 2.2; // Между 1.8 и 3.0
+                            } else if (zoom >= 13) {
+                                scaleFactor = 1.9; // Между 1.6 и 2.5
+                            } else if (zoom >= 12) {
+                                scaleFactor = 1.7; // Между 1.4 и 2.2
+                            } else if (zoom >= 11) {
+                                scaleFactor = 1.5; // Между 1.2 и 1.8
+                            } else if (zoom >= 10) {
+                                scaleFactor = 1.3; // Между 1.0 и 1.5
+                            } else {
+                                scaleFactor = 1.1; // Между 0.9 и 1.2
+                            }
+                            
+                            return [
+                                Math.round(baseSize[0] * scaleFactor),
+                                Math.round(baseSize[1] * scaleFactor)
+                            ];
+                        }
+            
+                        // Сохраняем оригинальные функции pointToLayer для каждого слоя
+                        iconLayers.forEach(item => {
+                            if (item.layer && item.layer.options && item.layer.options.pointToLayer) {
+                                item.originalPointToLayer = item.layer.options.pointToLayer;
+                            }
+                        });
+            
+                        // Функция обновления размеров иконок при изменении зума
+                        function updateIconsZoom() {
+                            const currentZoom = map.getZoom();
+                            console.log('Zoom changed to:', currentZoom, '- updating icons with moderate sizes');
+                            
+                            iconLayers.forEach(item => {
+                                if (!item.layer) return;
+                                
+                                // Сохраняем текущие маркеры
+                                const markers = [];
+                                item.layer.eachLayer(function(layer) {
+                                    if (layer instanceof L.Marker) {
+                                        markers.push({
+                                            feature: layer.feature,
+                                            latlng: layer.getLatLng()
+                                        });
+                                    }
+                                });
+            
+                                if (markers.length === 0) return;
+            
+                                // Получаем базовый размер для этого слоя
+                                const baseSize = item.baseSize || [20, 30];
+                                const newSize = getIconSize(baseSize, currentZoom);
+                                
+                                // Создаем новую функцию pointToLayer с обновленным размером
+                                const newPointToLayer = function(feature, latlng) {
+                                    let iconUrl = '';
+                                    
+                                    // Определяем URL иконки в зависимости от слоя
+                                    if (item.layer === layer__19) iconUrl = 'images/шахматы.png';
+                                    else if (item.layer === layer__20) iconUrl = 'images/стрельба из лука.png';
+                                    else if (item.layer === layer__21) iconUrl = 'images/бильярд.png';
+                                    else if (item.layer === layer__22) iconUrl = 'images/футбол.png';
+                                    else if (item.layer === layer__23) iconUrl = 'images/хоккей.png';
+                                    else if (item.layer === layer__24) iconUrl = 'images/теннис.png';
+                                    else if (item.layer === layer__25) iconUrl = 'images/бадминтон.png';
+                                    else if (item.layer === layer__26) iconUrl = 'images/баскетбол.png';
+                                    else if (item.layer === layer__27) iconUrl = 'images/волейбол.png';
+                                    else if (item.layer === layer__28) iconUrl = 'images/сноуборд.png';
+                                    else if (item.layer === layer__29) iconUrl = 'images/лыжный спорт.png';
+                                    else if (item.layer === layer__30) iconUrl = 'images/фигурное катание.png';
+                                    else if (item.layer === layer__31) iconUrl = 'images/спортивные танцы.png';
+                                    else if (item.layer === layer__32) iconUrl = 'images/гимнастика.png';
+                                    else if (item.layer === layer__33) iconUrl = 'images/аэробика.png';
+                                    else if (item.layer === layer__34) iconUrl = 'images/акробатика.png';
+                                    else if (item.layer === layer__35) iconUrl = 'images/парусный спорт.png';
+                                    else if (item.layer === layer__36) iconUrl = 'images/плаванье.png';
+                                    else if (item.layer === layer__37) iconUrl = 'images/фехтование.png';
+                                    else if (item.layer === layer__38 || item.layer === layer__39 || 
+                                             item.layer === layer__40 || item.layer === layer__41 || 
+                                             item.layer === layer__42 || item.layer === layer__43 || 
+                                             item.layer === layer__44 || item.layer === layer__45) {
+                                        iconUrl = 'images/боевые единоборства.png';
+                                    }
+                                    else if (item.layer === layer__46) iconUrl = 'images/борьба.png';
+                                    else if (item.layer === layer__47) iconUrl = 'images/бокс.png';
+                                    else if (item.layer === layer__48) iconUrl = 'images/скалолазание.png';
+                                    else if (item.layer === layer__49) iconUrl = 'images/рафтинг.png';
+                                    else if (item.layer === layer__50) iconUrl = 'images/конный спорт.png';
+                                    else if (item.layer === layer__51) iconUrl = 'images/картинг.png';
+                                    else if (item.layer === layer__52) iconUrl = 'images/велоспорт.png';
+                                    else if (item.layer === layer__53) iconUrl = 'images/батутный спорт.png';
+                                    
+                                    // Создаем иконку с новым размером
+                                    const icon = L.icon({
+                                        iconUrl: iconUrl,
+                                        iconSize: newSize,
+                                        iconAnchor: [newSize[0]/2, newSize[1]],
+                                        popupAnchor: [0, -newSize[1]]
+                                    });
+                                    
+                                    return L.marker(latlng, { icon: icon });
+                                };
+                                
+                                // Временно заменяем pointToLayer
+                                item.layer.options.pointToLayer = newPointToLayer;
+                                
+                                // Очищаем слой и добавляем маркеры заново
+                                item.layer.clearLayers();
+                                
+                                // Добавляем маркеры с новыми размерами
+                                markers.forEach(m => {
+                                    const marker = newPointToLayer(m.feature, m.latlng);
+                                    marker.feature = m.feature;
+                                    marker.addTo(item.layer);
+                                });
+                                
+                                // Восстанавливаем onEachFeature
+                                if (item.layer.options.onEachFeature) {
+                                    item.layer.eachLayer(function(layer) {
+                                        if (layer.feature) {
+                                            item.layer.options.onEachFeature(layer.feature, layer);
+                                        }
+                                    });
+                                }
+                            });
+                        }
+            
+                        // Добавляем обработчик события zoomend
+                        map.on('zoomend', updateIconsZoom);
+                        
+                        // Вызываем функцию один раз при загрузке
+                        setTimeout(() => {
+                            updateIconsZoom();
+                        }, 500);
+                    }
+            
+                    // Запускаем функцию после загрузки всех слоев
+                    if (document.readyState === 'loading') {
+                        document.addEventListener('DOMContentLoaded', setupZoomResponsiveIcons);
+                    } else {
+                        setupZoomResponsiveIcons();
+                    }
+                    </script>
+                    <!-- Конец кода для увеличения значков -->
+
+                            <!-- Код для увеличения значков крупных спортивных объектов (слой 54) - БАЗОВЫЙ РАЗМЕР 100x100 -->
+        <script>
+            // Функция для динамического изменения размера иконок крупных спортивных объектов при зуме
+            function setupZoomResponsiveSportObjects() {
+                // Проверяем, существует ли слой 54
+                if (typeof layer__54 === 'undefined' || !layer__54) {
+                    console.log('Слой 54 не найден, пробуем через 1 секунду...');
+                    setTimeout(setupZoomResponsiveSportObjects, 500);
+                    return;
+                }
+                
+                console.log('✅ Настройка масштабирования для крупных спортивных объектов (слой 54) - БАЗОВЫЙ РАЗМЕР 100x100');
+    
+                // Базовый размер для иконок спортивных объектов - 100x100
+                const baseSize = [100, 100];
+                
+                // Функция для расчета размера иконки в зависимости от зума
+                function getIconSize(zoom) {
+                    let scaleFactor = 1;
+                    
+                    if (zoom >= 18) {
+                        scaleFactor = 4.0;  // 400x400
+                    } else if (zoom >= 17) {
+                        scaleFactor = 3.7;  // 370x370
+                    } else if (zoom >= 16) {
+                        scaleFactor = 3.4;  // 340x340
+                    } else if (zoom >= 15) {
+                        scaleFactor = 3.1;  // 310x310
+                    } else if (zoom >= 14) {
+                        scaleFactor = 2.8;  // 280x280
+                    } else if (zoom >= 13) {
+                        scaleFactor = 2.5;  // 250x250
+                    } else if (zoom >= 12) {
+                        scaleFactor = 2.2;  // 220x220
+                    } else if (zoom >= 11) {
+                        scaleFactor = 1.9;  // 190x190
+                    } else {
+                        scaleFactor = 1.6;  // 160x160
+                    }
+                    
+                    return [
+                        Math.round(baseSize[0] * scaleFactor),
+                        Math.round(baseSize[1] * scaleFactor)
+                    ];
+                }
+    
+                // Функция для определения иконки по названию объекта
+                function getIconFile(name) {
+                    if (!name) return 'images/building.png';
+                    
+                    name = String(name).toLowerCase();
+                    
+                    if (name.includes('нгту')) return 'images/НГТУ.png';
+                    if (name.includes('подгорного')) return 'images/Центр_Подгорного.png';
+                    if (name.includes('позднякова')) return 'images/Позднякова.png';
+                    if (name.includes('лдс')) return 'images/ЛДС_Сибирь.png';
+                    if (name.includes('локомотив')) return 'images/Локомотив.png';
+                    if (name.includes('сибирь-арена') || (name.includes('сибирь') && !name.includes('лдс'))) return 'images/сибирь-арена.png';
+                    if (name.includes('заря')) return 'images/Заря.png';
+                    if (name.includes('александрит')) return 'images/Александрит.png';
+                    
+                    return 'images/building.png';
+                }
+    
+                // Функция обновления размеров иконок при изменении зума
+                function updateSportIconsZoom() {
+                    try {
+                        const currentZoom = map.getZoom();
+                        
+                        // Сохраняем текущие маркеры
+                        const markers = [];
+                        layer__54.eachLayer(function(layer) {
+                            if (layer instanceof L.Marker) {
+                                markers.push({
+                                    feature: layer.feature,
+                                    latlng: layer.getLatLng()
+                                });
+                            }
+                        });
+    
+                        if (markers.length === 0) {
+                            console.log('Нет маркеров в слое 54');
+                            return;
+                        }
+    
+                        // Получаем новый размер для текущего зума
+                        const newSize = getIconSize(currentZoom);
+                        
+                        // Создаем новую функцию pointToLayer с обновленным размером
+                        const newPointToLayer = function(feature, latlng) {
+                            const name = feature.properties ? feature.properties['name'] : '';
+                            const iconFile = getIconFile(name);
+                            
+                            const icon = L.icon({
+                                iconUrl: iconFile,
+                                iconSize: newSize,
+                                iconAnchor: [newSize[0]/2, newSize[1]],
+                                popupAnchor: [0, -newSize[1]]
+                            });
+                            
+                            return L.marker(latlng, { 
+                                icon: icon,
+                                title: name || 'Спортивный объект'
+                            });
+                        };
+                        
+                        // Временно заменяем pointToLayer
+                        layer__54.options.pointToLayer = newPointToLayer;
+                        
+                        // Очищаем слой и добавляем маркеры заново
+                        layer__54.clearLayers();
+                        
+                        // Добавляем маркеры с новыми размерами
+                        markers.forEach(m => {
+                            const marker = newPointToLayer(m.feature, m.latlng);
+                            marker.feature = m.feature;
+                            marker.addTo(layer__54);
+                        });
+                        
+                        // Восстанавливаем onEachFeature для попапов
+                        if (layer__54.options.onEachFeature) {
+                            layer__54.eachLayer(function(layer) {
+                                if (layer.feature) {
+                                    layer__54.options.onEachFeature(layer.feature, layer);
+                                }
+                            });
+                        }
+                        
+                        console.log('Слой 54: зум', currentZoom, 'размер иконок', newSize[0] + 'x' + newSize[1]);
+                        
+                    } catch (error) {
+                        console.error('Ошибка при обновлении иконок слоя 54:', error);
+                    }
+                }
+    
+                // Убеждаемся, что слой добавлен на карту
+                if (!map.hasLayer(layer__54)) {
+                    console.log('Слой 54 не на карте, добавляем...');
+                    map.addLayer(layer__54);
+                }
+    
+                // Добавляем обработчик события zoomend
+                map.on('zoomend', updateSportIconsZoom);
+                
+                // Вызываем функцию один раз при загрузке
+                setTimeout(() => {
+                    updateSportIconsZoom();
+                    console.log('✅ Масштабирование для слоя 54 активировано (базовый размер 100x100)');
+                }, 1000);
+            }
+    
+            // Запускаем функцию после загрузки карты
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function() {
+                    setTimeout(setupZoomResponsiveSportObjects, 1500);
+                });
+            } else {
+                setTimeout(setupZoomResponsiveSportObjects, 1500);
+            }
+    
+            // Дополнительная проверка, если слой загрузится позже
+            setTimeout(function() {
+                if (typeof layer__54 !== 'undefined' && layer__54) {
+                    console.log('🔄 Повторная попытка настройки слоя 54...');
+                    setupZoomResponsiveSportObjects();
+                }
+            }, 3000);
+            </script>
+            <!-- Конец кода для увеличения значков спортивных объектов -->
     </body>
 </html>
